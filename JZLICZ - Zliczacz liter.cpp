@@ -6,7 +6,7 @@ using namespace std;
 // a-z 97-122    A-Z 65-90
 
 int main() {
-    const int letters = 60;
+    const int letters = 52;
     int arr[letters];
     for (int i = 0; i < letters; i++) arr[i] = 0;
     
