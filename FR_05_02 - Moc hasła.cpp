@@ -1,4 +1,4 @@
-// not working solution - to find a mistake
+// not working solution - have to find a mistake
 
 #include <iostream>
 #include <string>
