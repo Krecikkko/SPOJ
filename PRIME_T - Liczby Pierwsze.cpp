@@ -8,7 +8,6 @@ int main() {
 
     while (n--) {
         int num;
-        bool is_first = true;
         cin >> num;
         if (num == 1) {
             cout << "NIE" << endl;
@@ -17,6 +16,7 @@ int main() {
             cout << "TAK" << endl;
             continue;
         }
+        bool is_first = true;
         for (int i = 2; i < num; i++) {
             if (num % i == 0) {
                 is_first = false;
