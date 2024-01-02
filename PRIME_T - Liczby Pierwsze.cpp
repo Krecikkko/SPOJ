@@ -2,7 +2,7 @@
 
 using namespace std;
 
-bool check_if_is_first(int num) {
+bool is_prime(int num) {
     if (num == 1) {
         return false;
     } else if (num == 2) {
@@ -24,7 +24,7 @@ int main() {
     while (n--) {
         int num;
         cin >> num;
-        if (check_if_is_first(num)) cout << "TAK" << endl;
+        if (is_prime(num)) cout << "TAK" << endl;
         else cout << "NIE" << endl;
     }
     return 0;
