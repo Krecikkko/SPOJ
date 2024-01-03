@@ -8,7 +8,6 @@ bool is_prime(int num) {
     } else if (num == 2) {
         return true;
     }
-    bool is_first = true;
     for (int i = 2; i < num; i++) {
         if (num % i == 0) {
             return false;
