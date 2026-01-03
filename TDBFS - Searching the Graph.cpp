@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <set>
+#include <queue>
 
 using namespace std;
 
@@ -18,6 +20,10 @@ public:
 
     void addNeighbour(Node* node) {
         this->neighbours.push_back(node);
+    }
+
+    vector<Node*> getNeighbours() {
+        return neighbours;
     }
 
     void getString() const {
@@ -45,6 +51,7 @@ public:
     }
 
     Node* getNode(int idx) {
+        idx -= 1;
         if (idx < 0 || idx >= (int)nodes.size()) {
             return new Node(0);
         }
@@ -57,6 +64,28 @@ public:
         }
     }
 };
+
+vector<Node*> bfs(Graph* graph, const int start) {
+    vector<Node*> visited;
+    queue<Node*> queue;
+    queue.push(graph->getNode(start));
+
+    while (!queue.empty()) {
+        Node* node = queue.front();
+        queue.pop();
+        visited.push_back(node);
+
+        for (Node* n : node->getNeighbours()) {
+            for (const Node* v : visited) {
+                if (n == v) {
+                    break;
+                }
+            }
+            queue.push(n);
+        }
+    }
+    return visited;
+}
 
 int main() {
     Graph* graph = nullptr;
@@ -86,8 +115,17 @@ int main() {
                 currentNode->addNeighbour(graph->getNode(a));
             }
         }
-
         graph->getString();
+
+        int v;
+        cin >> v;
+        vector<Node*> result = bfs(graph, v);
+
+        for (Node* r : result) {
+            cout << r->getValue() << " ";
+        }
+        cout << endl;
+
 
         delete graph;
     }
