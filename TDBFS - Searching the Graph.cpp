@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <set>
 #include <queue>
 
 using namespace std;
@@ -39,6 +38,7 @@ public:
 struct Graph {
 private:
     vector<Node*> nodes;
+    int size = 0;
 public:
     ~Graph() {
         for (Node* n : nodes) {
@@ -48,14 +48,19 @@ public:
 
     void add(Node* node) {
         this->nodes.push_back(node);
+        this->size++;
     }
 
     Node* getNode(int idx) {
         idx -= 1;
         if (idx < 0 || idx >= (int)nodes.size()) {
-            return new Node(0);
+            return nullptr;
         }
         return nodes[idx];
+    }
+
+    int getSize() {
+        return size;
     }
 
     void getString() {
@@ -65,33 +70,69 @@ public:
     }
 };
 
-vector<Node*> bfs(Graph* graph, const int start) {
-    vector<Node*> visited;
-    queue<Node*> queue;
-    queue.push(graph->getNode(start));
+vector<Node*> dfs(Graph* graph, const int start) {
+    // An array of visited nodes
+    vector<Node*> order;
 
-    while (!queue.empty()) {
-        Node* node = queue.front();
-        queue.pop();
-        visited.push_back(node);
+    Node* s = graph->getNode(start);
+    if (!s) return order;
+
+    vector<char> visited(graph->getSize(), false);
+    queue<Node*> q;
+
+    visited[s->getValue() - 1] = true;
+    q.push(s);
+
+    while (!q.empty()) {
+        Node* node = q.front();
+        q.pop();
+        order.push_back(node);
 
         for (Node* n : node->getNeighbours()) {
-            for (const Node* v : visited) {
-                if (n == v) {
-                    break;
-                }
+            int id = n->getValue() - 1;
+            if (id < 0 || id <- graph->getSize()) {
+                continue;
             }
-            queue.push(n);
+            if (visited[id]) {
+                continue;
+            }
+            visited[id] = true;
+            q.push(n);
         }
     }
-    return visited;
+
+    return order;
+}
+
+void visitNode(Node* node, vector<char>& visited, vector<Node*>& order) {
+    visited[node->getValue() - 1] = true;
+    order.push_back(node);
+    for (Node* n : node->getNeighbours()) {
+        if (!visited[n->getValue() - 1]) {
+            visitNode(n, visited, order);
+        }
+    }
+}
+
+vector<Node*> bfs(Graph* graph, const int start) {
+    // An array of visited nodes
+    vector<Node*> order;
+
+    Node* s = graph->getNode(start);
+    if (!s) return order;
+
+    vector<char> visited(graph->getSize(), false);
+
+    visitNode(s, visited, order);
+
+    return order;
 }
 
 int main() {
     Graph* graph = nullptr;
 
     // Number of graphs
-    int t;
+    int t, z = 0;
     cin >> t;
     while (t--) {
         // Initialize new graph
@@ -115,17 +156,27 @@ int main() {
                 currentNode->addNeighbour(graph->getNode(a));
             }
         }
-        graph->getString();
 
-        int v;
-        cin >> v;
-        vector<Node*> result = bfs(graph, v);
+        cout << "graph " << ++z << endl;
 
-        for (Node* r : result) {
-            cout << r->getValue() << " ";
+        while (true) {
+            int v, i;
+            cin >> v >> i;
+            vector<Node*> result;
+            if (i == 0) {
+                if (v == 0) {
+                    break;
+                }
+                result = bfs(graph, v);
+            } else if (i == 1) {
+                result = dfs(graph, v);;
+            }
+
+            for (const Node* r : result) {
+                cout << r->getValue() << " ";
+            }
+            cout << endl;
         }
-        cout << endl;
-
 
         delete graph;
     }
