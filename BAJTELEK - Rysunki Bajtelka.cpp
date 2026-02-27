@@ -1,11 +1,14 @@
 #include <iostream>
 #include <vector>
 
+#define BLACK_INK_BITOKUL 10
+#define GRAY_INK_BITOKUL 6
+
 using namespace std;
 
 struct Coord
 {
-    int x, y;
+    long long x, y;
 
     Coord() : x(0), y(0) {}
     Coord(const int x, const int y) : x(x), y(y) {}
@@ -15,13 +18,20 @@ struct Polyline
 {
     vector<Coord> points;
 
-    float calculateArea()
+    double calculateArea()
     {
-        float fArea = 0.5 * ((points[1].x - points[0].x) * (points[2].y - points[0].y) -
-            (points[1].y - points[0].y) * (points[2].x - points[0].y));
-        float sArea = 0.5 * ((points[3].x - points[2].x) * (points[0].y - points[2].y) -
-            (points[3].y - points[2].y) * (points[0].x - points[2].y));
-        float area = fArea + sArea;
+        // Using Shoelace Algorithm
+        double area = 0.0;
+        int n = points.size();
+        if (n < 3) return 0;
+
+        for (int i = 0; i < n; i++)
+        {
+            int j = (i + 1) % n;
+            area += (double)points[i].x * points[j].y;
+            area -= (double)points[j].x * points[i].y;
+        }
+        return abs(area) / 2.0;
     }
 };
 
@@ -35,7 +45,19 @@ public:
         polylines.push_back(polyline);
     }
 
-    float calculateBlackArea() {}
+    int getInkUsage()
+    {
+        if (polylines.size() < 0)
+        {
+            return 0;
+        }
+
+        double blackArea = polylines[0].calculateArea();
+        double totalArea = polylines[1].calculateArea();
+        double grayArea = totalArea - blackArea;
+
+        return (int)(blackArea * BLACK_INK_BITOKUL + grayArea * GRAY_INK_BITOKUL);
+    }
 };
 
 int main() {
@@ -49,17 +71,23 @@ int main() {
         Drawing drawing;
         for (int j = 0; j < 2; j++)
         {
-            Coord* firstCord = nullptr;
+            Coord firstCord;
+            bool hasFirst = false;
             Polyline polyline;
             while (true)
             {
                 Coord coord;
                 cin >> coord.x >> coord.y;
 
-                if (firstCord == nullptr)
+                if (!hasFirst)
                 {
-                    firstCord = &polyline.points.back();
-                } else if (firstCord->x == coord.x && firstCord->y == coord.y)
+                    firstCord = coord;
+                    hasFirst = true;
+                    polyline.points.push_back(coord);
+                    continue;
+                }
+
+                if (firstCord.x == coord.x && firstCord.y == coord.y)
                 {
                     break;
                 }
@@ -68,7 +96,9 @@ int main() {
             }
             drawing.addPolyline(polyline);
         }
+        cout << drawing.getInkUsage() << endl;
     }
-
     return 0;
 }
+
+// Not finished
